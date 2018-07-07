@@ -12,37 +12,42 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
-if [ $# -lt 4 ]; then
-   echo "Too few arguments to install_shedbuilt_toolchain"
-   echo "Usage: make_toolchain <repo-url> <repo-branch> <install-list> <install-root>"
-   echo "Example: sudo ./make_toolchain.sh https://github.com/shedbuilt/shedbuilt-toolchain.git blank toolchain_sun8i.sml /mnt/shedstrap"
+if [ $# -lt 5 ]; then
+   echo "Too few arguments to make_toolchain"
+   echo "Usage: make_toolchain <repo-url> <repo-branch> <install-list> <device-option> <install-root>"
+   echo "Example: sudo ./make_toolchain.sh https://github.com/shedbuilt/shedbuilt-toolchain.git blank toolchain_sun8i.sml /mnt/bootstrap"
    exit 1
 fi
 
-# Configuration
-TOOLCHAIN_REPO="$1"
-RELEASE_BRANCH="$2"
-TOOLCHAIN_SMLFILE="$3"
-INSTALL_ROOT="${4%/}"
+SHED_TOOLCHAIN_REPO="$1"
+SHED_TOOLCHAIN_BRANCH="$2"
+SHED_TOOLCHAIN_SMLFILE="$3"
+SHED_TOOLCHAIN_DEVICE="$4"
+SHED_TOOLCHAIN_INSTALLROOT="${5%/}"
+
+if [ ! -d "$SHED_TOOLCHAIN_INSTALLROOT" ]; then
+    echo "Specified install root does not appear to be a directory: $SHED_TOOLCHAIN_INSTALLROOT"
+    exit 1
+fi
 
 # Create Shedbuilt toolchain repo at destination
-PKGDIR="${RELEASE_BRANCH}-toolchain"
-cd "$INSTALL_ROOT"
+PKGDIR="${SHED_TOOLCHAIN_BRANCH}-toolchain"
+cd "$SHED_TOOLCHAIN_INSTALLROOT"
 if [ ! -d $PKGDIR ]; then
-    git clone "$TOOLCHAIN_REPO" $PKGDIR
-    cd $PKGDIR
-    git checkout "$RELEASE_BRANCH"
-    git submodule init
+    git clone "$SHED_TOOLCHAIN_REPO" $PKGDIR &&
+    cd $PKGDIR &&
+    git checkout "$SHED_TOOLCHAIN_BRANCH" &&
+    git submodule init || exit 1
 else
-    cd $PKGDIR
-    git pull
+    cd $PKGDIR &&
+    git pull || exit 1
 fi
-git submodule update
+git submodule update || exit 1
 
 # Create symlink
 if [ ! -L /tools ]; then
-    mkdir -v "${INSTALL_ROOT}/tools"
-    ln -sv "${INSTALL_ROOT}/tools" /
+    mkdir -v "${SHED_TOOLCHAIN_INSTALLROOT}/tools" &&
+    ln -sv "${SHED_TOOLCHAIN_INSTALLROOT}/tools" / || exit 1
 fi
 
 # Set environment variables
@@ -55,8 +60,8 @@ fi
 export LC_ALL PATH
 
 # Install toolchain packages
-shedmake install-list "$TOOLCHAIN_SMLFILE" --options 'toolchain !docs'   \
-                                      --install-root "$INSTALL_ROOT" \
+shedmake install-list "$SHED_TOOLCHAIN_SMLFILE" --options 'toolchain !docs'" $SHED_TOOLCHAIN_DEVICE" \   \
+                                      --install-root "$SHED_TOOLCHAIN_INSTALLROOT" \
                                       --verbose || exit 1
 
 # Strip binaries and remove man and info pages
