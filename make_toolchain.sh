@@ -15,7 +15,7 @@ fi
 if [ $# -lt 5 ]; then
    echo "Too few arguments to make_toolchain"
    echo "Usage: make_toolchain <repo-url> <repo-branch> <install-list> <device-option> <install-root>"
-   echo "Example: sudo ./make_toolchain.sh https://github.com/shedbuilt/shedbuilt-toolchain.git blank toolchain_sun8i.sml /mnt/bootstrap"
+   echo "Example: sudo ./make_toolchain.sh https://github.com/shedbuilt/shedbuilt-toolchain.git blank toolchain_sun8i.sml nanopineo /mnt/bootstrap"
    exit 1
 fi
 
