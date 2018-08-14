@@ -60,7 +60,7 @@ fi
 export LC_ALL PATH
 
 # Install toolchain packages
-shedmake install-list "$SHED_TOOLCHAIN_SMLFILE" --options 'toolchain !docs'" $SHED_TOOLCHAIN_DEVICE" \   \
+shedmake install-list "$SHED_TOOLCHAIN_SMLFILE" --options 'toolchain !docs'" $SHED_TOOLCHAIN_DEVICE" \
                                       --install-root "$SHED_TOOLCHAIN_INSTALLROOT" \
                                       --verbose || exit 1
 
