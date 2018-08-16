@@ -118,6 +118,17 @@ shedmake install-list "$SHDREL_SMLFILE" \
     --binary-dir "$SHDREL_BINDIR" \
     --verbose || exit 1
 
+# Install root user skeleton
+cd "$SHDREL_MOUNT"/etc/skel
+shopt -s globstar nullglob dotglob
+for DEFAULT_FILE in **; do
+    if [ -d "$DEFAULT_FILE" ]; then
+        continue
+    fi
+    install -m644 "$DEFAULT_FILE" "$SHDREL_MOUNT"/root
+done
+shopt -u globstar nullglob dotglob
+
 # Copy out u-boot binary and unmount all filesystems
 SHDREL_UBOOT_BIN_PATH=$(ls "$SHDREL_MOUNT"/boot/u-boot/*_${SHDREL_DEVICE}.bin)
 SHDREL_UBOOT_BIN_FILE=$(basename "$SHDREL_UBOOT_BIN_PATH")

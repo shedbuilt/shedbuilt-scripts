@@ -12,3 +12,14 @@ rm -f /usr/lib/libltdl.a
 rm -f /usr/lib/libfl.a
 rm -f /usr/lib/libfl_pic.a
 rm -f /usr/lib/libz.a
+
+# Install root user skeleton
+cd /etc/skel
+shopt -s globstar nullglob dotglob
+for DEFAULT_FILE in **; do
+    if [ -d "$DEFAULT_FILE" ]; then
+        continue
+    fi
+    install -m644 "$DEFAULT_FILE" /root
+done
+shopt -u globstar nullglob dotglob
