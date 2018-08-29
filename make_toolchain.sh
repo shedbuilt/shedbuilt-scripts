@@ -4,7 +4,7 @@
 # Description: Pulls packaging for the bootstrap toolchain from
 # the repository, then compiles and installs the toolchain to the
 # designated install root.
-# Example: sudo ./make_toolchain.sh https://github.com/shedbuilt/shedbuilt-toolchain.git blank toolchain_sun8i.sml /mnt/shedstrap
+# Example: sudo ./make_toolchain.sh https://github.com/shedbuilt/shedbuilt-toolchain.git blank toolchain_sun8i.sml nanopineo /mnt/shedstrap
 
 # Sanity Checks
 if [[ $EUID -ne 0 ]]; then
