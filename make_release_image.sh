@@ -11,7 +11,7 @@ fi
 
 SHDREL_SYSREPOURL="${1%/}"
 SHDREL_SYSRELEASE="$2"
-SHDREL_SMLFILE="$3"
+SHDREL_SMLFILE=$(readlink -f -n "$3")
 SHDREL_DEVICE="$4"
 SHDREL_IMGSIZE="$5"
 SHDREL_IMGFILE="$6"
@@ -92,15 +92,14 @@ if [ ! -d "$SHDREL_LOCAL_REPO_NAME" ]; then
     git init || exit 1
 fi
 cd "$SHDREL_REMOTE_REPODIR"
-for SHDREL_REMOTE_REPO_NAME in system utils graphics audio video multimedia networking communication games retrocomputing
+for SHDREL_REMOTE_REPO_NAME in audio communication development games graphics multimedia networking retrocomputing system utils video
 do
     if [ ! -d "$SHDREL_REMOTE_REPO_NAME" ]; then
-        git clone "${SHDREL_SYSREPOURL}/shedbuilt-${SHDREL_REMOTE_REPO_NAME}.git" "$SHDREL_REMOTE_REPO_NAME" &&
+        git clone --branch "$SHDREL_SYSRELEASE" --depth 1 --shallow-submodules "${SHDREL_SYSREPOURL}/shedbuilt-${SHDREL_REMOTE_REPO_NAME}.git" "$SHDREL_REMOTE_REPO_NAME" &&
         cd "$SHDREL_REMOTE_REPO_NAME" &&
-        git checkout "$SHDREL_SYSRELEASE" &&
         git submodule init || exit 1
     else
-        cd "$SHDREL_SYSTEM_REPO_NAME" &&
+        cd "$SHDREL_REMOTE_REPO_NAME" &&
         git pull || exit 1
     fi
     git submodule update || exit 1

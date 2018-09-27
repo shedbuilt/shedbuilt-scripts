@@ -1,7 +1,7 @@
 #!/tools/bin/bash
 
 # Install all packages
-shedmake install-list "/var/shedmake/repos/remote/system/${SHED_BOOTSTRAP_SMLFILE}" \
+shedmake install-list "/tools/${SHED_BOOTSTRAP_SMLFILE}" \
                       --verbose || exit 1
 
 # Remove static libraries

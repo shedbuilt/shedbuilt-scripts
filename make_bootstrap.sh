@@ -3,7 +3,7 @@
 # make_bootstrap
 # Description: Sets up virtual file systems and Shedbuilt system repository on
 # on the bootstrap partition, in preparation for system compilation in chroot.
-# Example: ./make_bootstrap.sh https://github.com/shedbuilt/shedbuilt-system.git blank bootstrap_sun8i.sml /mnt/bootstrap
+# Example: ./make_bootstrap.sh https://github.com/shedbuilt blank bootstrap_sun8i.sml /mnt/bootstrap
 
 # Sanity Checks
 if [[ $EUID -ne 0 ]]; then
@@ -14,14 +14,15 @@ fi
 if [ $# -lt 4 ]; then
    echo "Too few arguments to make_bootstrap"
    echo "Expected: make_bootstrap <system-repo-url> <system-repo-branch> <install-list> <install-root>"
-   echo "Example: ./make_bootstrap.sh https://github.com/shedbuilt/shedbuilt-system.git blank bootstrap_sun8i.sml /mnt/bootstrap"
+   echo "Example: ./make_bootstrap.sh https://github.com/shedbuilt blank bootstrap_sun8i.sml /mnt/bootstrap"
    exit 1
 fi
 
 SHED_BOOTSTRAP_INSTALLROOT="${4%/}"
-SHED_BOOTSTRAP_SMLFILE="$3"
+SHED_BOOTSTRAP_SMLFILE=$(readlink -f -n "$3")
+SHED_BOOTSTRAP_SMLFILE_NAME=$(basename $"SHED_BOOTSTRAP_SMLFILE")
 SHED_BOOTSTRAP_REPO_BRANCH="$2"
-SHED_BOOTSTRAP_SYSTEM_REPO="$1"
+SHED_BOOTSTRAP_REPO_BASEURL="${1%/}"
 
 if [ ! -d "$SHED_BOOTSTRAP_INSTALLROOT" ]; then
     echo "Specified install root does not appear to be a directory: $SHED_BOOTSTRAP_INSTALLROOT"
@@ -43,8 +44,10 @@ if ! mount | grep -q "${SHED_BOOTSTRAP_INSTALLROOT}/sys"; then
     fi
 fi
 
-# Install local bootstrap script
-install -m755 bootstrap_shedbuilt.sh /tools
+# Install local bootstrap script and SML file
+install -m755 bootstrap_shedbuilt.sh /tools &&
+install -m644 "$SHED_BOOTSTRAP_SMLFILE" /tools || exit 1
+
 # Create Shedbuilt system repository at destination
 TMPDIR="${SHED_BOOTSTRAP_INSTALLROOT}/var/tmp/shedmake"
 REPODIR="${SHED_BOOTSTRAP_INSTALLROOT}/var/shedmake/repos"
@@ -68,15 +71,19 @@ if [ ! -d "$LOCALREPONAME" ]; then
     git init || exit 1
 fi
 cd "$REMOTEREPODIR"
-if [ ! -d "$SYSREPONAME" ]; then
-    git clone "$SHED_BOOTSTRAP_SYSTEM_REPO" "$SYSREPONAME" &&
-    cd "$SYSREPONAME" &&
-    git checkout "$SHED_BOOTSTRAP_REPO_BRANCH" &&
-    git submodule init || exit 1
-else
-    cd "$SYSREPONAME" &&
-    git pull || exit 1
-fi
+for SHED_BOOTSTRAP_REMOTE_REPO_NAME in audio communication development games graphics multimedia networking retrocomputing system utils video
+do
+    if [ ! -d "$SHED_BOOTSTRAP_REMOTE_REPO_NAME" ]; then
+        git clone --branch "$SHED_BOOTSTRAP_REPO_BRANCH" --depth 1 --shallow-submodules "${SHED_BOOTSTRAP_REPO_BASEURL}/shedbuilt-${SHED_BOOTSTRAP_REMOTE_REPO_NAME}.git" "$SHED_BOOTSTRAP_REMOTE_REPO_NAME" &&
+        cd "$SHED_BOOTSTRAP_REMOTE_REPO_NAME" &&
+        git submodule init || exit 1
+    else
+        cd "$SHED_BOOTSTRAP_REMOTE_REPO_NAME" &&
+        git pull || exit 1
+    fi
+    git submodule update || exit 1
+    cd ..
+done
 git submodule update || exit 1
 
 # Cache all required source files
@@ -88,7 +95,7 @@ chroot "$SHED_BOOTSTRAP_INSTALLROOT" /tools/bin/env -i \
             TERM="$TERM"                \
             PS1='(bootstrap) \u:\w\$ '  \
             PATH=/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin \
-            SHED_BOOTSTRAP_SMLFILE="$SHED_BOOTSTRAP_SMLFILE" \
+            SHED_BOOTSTRAP_SMLFILE="$SHED_BOOTSTRAP_SMLFILE_NAME" \
             /tools/bin/bash +h /tools/bootstrap_shedbuilt.sh
 
 # Set up the swap file
