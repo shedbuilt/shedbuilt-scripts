@@ -4,7 +4,7 @@
 # Description: Pulls packaging for the bootstrap toolchain from
 # the repository, then compiles and installs the toolchain to the
 # designated install root.
-# Example: sudo ./make_toolchain.sh https://github.com/shedbuilt/shedbuilt-toolchain.git blank toolchain_sun8i.sml nanopineo /mnt/shedstrap
+# Example: sudo ./make_toolchain.sh https://github.com/shedbuilt/shedbuilt-toolchain.git blank sml/toolchain_sun8i.sml nanopineo /mnt/shedstrap
 
 # Sanity Checks
 if [[ $EUID -ne 0 ]]; then
@@ -15,13 +15,13 @@ fi
 if [ $# -lt 5 ]; then
    echo "Too few arguments to make_toolchain"
    echo "Usage: make_toolchain <repo-url> <repo-branch> <install-list> <device-option> <install-root>"
-   echo "Example: sudo ./make_toolchain.sh https://github.com/shedbuilt/shedbuilt-toolchain.git blank toolchain_sun8i.sml nanopineo /mnt/bootstrap"
+   echo "Example: sudo ./make_toolchain.sh https://github.com/shedbuilt/shedbuilt-toolchain.git blank sml/toolchain_sun8i.sml nanopineo /mnt/bootstrap"
    exit 1
 fi
 
 SHED_TOOLCHAIN_REPO="$1"
 SHED_TOOLCHAIN_BRANCH="$2"
-SHED_TOOLCHAIN_SMLFILE="$3"
+SHED_TOOLCHAIN_SMLFILE=$(readlink -f -n "$3")
 SHED_TOOLCHAIN_DEVICE="$4"
 SHED_TOOLCHAIN_INSTALLROOT="${5%/}"
 
