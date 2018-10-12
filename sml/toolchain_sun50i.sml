@@ -5,6 +5,7 @@ glibc --host aarch64-shedstrap-linux-gnu --skip-postinstall
 libstdcpp --host aarch64-shedstrap-linux-gnu
 binutils --host aarch64-shedstrap-linux-gnu --jobs 1 --force
 gcc --host aarch64-shedstrap-linux-gnu --ignore-dependencies --skip-preinstall --jobs 1 --force
+m4
 ncurses
 bash
 bison
@@ -17,7 +18,6 @@ gawk
 gettext
 grep
 gzip
-m4
 make
 patch
 perl

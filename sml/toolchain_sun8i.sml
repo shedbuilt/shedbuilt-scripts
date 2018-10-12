@@ -5,6 +5,7 @@ glibc --host armv7l-shedstrap-linux-gnueabihf --skip-postinstall
 libstdcpp --host armv7l-shedstrap-linux-gnueabihf
 binutils --host armv7l-shedstrap-linux-gnueabihf --jobs 1 --force
 gcc --host armv7l-shedstrap-linux-gnueabihf --ignore-dependencies --skip-preinstall --jobs 1 --force
+m4
 ncurses
 bash
 bison
@@ -17,7 +18,6 @@ gawk
 gettext
 grep
 gzip
-m4
 make
 patch
 perl

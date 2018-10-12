@@ -3,7 +3,7 @@
 # make_bootstrap
 # Description: Sets up virtual file systems and Shedbuilt system repository on
 # on the bootstrap partition, in preparation for system compilation in chroot.
-# Example: ./make_bootstrap.sh https://github.com/shedbuilt blank bootstrap_sun8i.sml /mnt/bootstrap
+# Example: ./make_bootstrap.sh https://github.com/shedbuilt blank sml/bootstrap_sun8i.sml /mnt/bootstrap
 
 # Sanity Checks
 if [[ $EUID -ne 0 ]]; then
@@ -14,7 +14,7 @@ fi
 if [ $# -lt 4 ]; then
    echo "Too few arguments to make_bootstrap"
    echo "Expected: make_bootstrap <system-repo-url> <system-repo-branch> <install-list> <install-root>"
-   echo "Example: ./make_bootstrap.sh https://github.com/shedbuilt blank bootstrap_sun8i.sml /mnt/bootstrap"
+   echo "Example: ./make_bootstrap.sh https://github.com/shedbuilt blank sml/bootstrap_sun8i.sml /mnt/bootstrap"
    exit 1
 fi
 
@@ -49,28 +49,27 @@ install -m755 bootstrap_shedbuilt.sh /tools &&
 install -m644 "$SHED_BOOTSTRAP_SMLFILE" /tools || exit 1
 
 # Create Shedbuilt system repository at destination
-TMPDIR="${SHED_BOOTSTRAP_INSTALLROOT}/var/tmp/shedmake"
-REPODIR="${SHED_BOOTSTRAP_INSTALLROOT}/var/shedmake/repos"
-REMOTEREPODIR="${REPODIR}/remote"
-LOCALREPODIR="${REPODIR}/local"
-SYSREPONAME="system"
-LOCALREPONAME="default"
-if [ ! -d "$TMPDIR" ]; then
-    mkdir -pv "$TMPDIR" || exit 1
+SHED_BOOTSTRAP_TMPDIR="${SHED_BOOTSTRAP_INSTALLROOT}/var/tmp/shedmake"
+SHED_BOOTSTRAP_REPODIR="${SHED_BOOTSTRAP_INSTALLROOT}/var/shedmake/repos"
+SHED_BOOTSTRAP_REMOTE_REPODIR="${SHED_BOOTSTRAP_REPODIR}/remote"
+SHED_BOOTSTRAP_LOCAL_REPODIR="${SHED_BOOTSTRAP_REPODIR}/local"
+SHED_BOOTSTRAP_LOCAL_REPO_NAME="default"
+if [ ! -d "$SHED_BOOTSTRAP_TMPDIR" ]; then
+    mkdir -pv "$SHED_BOOTSTRAP_TMPDIR" || exit 1
 fi
-if [ ! -d "$REMOTEREPODIR" ]; then
-    mkdir -pv "$REMOTEREPODIR" || exit 1
+if [ ! -d "$SHED_BOOTSTRAP_REMOTE_REPODIR" ]; then
+    mkdir -pv "$SHED_BOOTSTRAP_REMOTE_REPODIR" || exit 1
 fi
-if [ ! -d "$LOCALREPODIR" ]; then
-    mkdir -v "$LOCALREPODIR" || exit 1
+if [ ! -d "$SHED_BOOTSTRAP_LOCAL_REPODIR" ]; then
+    mkdir -v "$SHED_BOOTSTRAP_LOCAL_REPODIR" || exit 1
 fi
-cd "$LOCALREPODIR"
-if [ ! -d "$LOCALREPONAME" ]; then
-    mkdir "$LOCALREPONAME" &&
-    cd "$LOCALREPONAME" &&
+cd "$SHED_BOOTSTRAP_LOCAL_REPODIR"
+if [ ! -d "$SHED_BOOTSTRAP_LOCAL_REPO_NAME" ]; then
+    mkdir "$SHED_BOOTSTRAP_LOCAL_REPO_NAME" &&
+    cd "$SHED_BOOTSTRAP_LOCAL_REPO_NAME" &&
     git init || exit 1
 fi
-cd "$REMOTEREPODIR"
+cd "$SHED_BOOTSTRAP_REMOTE_REPODIR"
 for SHED_BOOTSTRAP_REMOTE_REPO_NAME in audio communication development games graphics multimedia networking retrocomputing system utils video
 do
     if [ ! -d "$SHED_BOOTSTRAP_REMOTE_REPO_NAME" ]; then
@@ -84,10 +83,9 @@ do
     git submodule update || exit 1
     cd ..
 done
-git submodule update || exit 1
 
 # Cache all required source files
-shedmake fetch-source-list "$SHED_BOOTSTRAP_SMLFILE" || exit 1
+SHED_REMOTE_REPO_DIR="$SHED_BOOTSTRAP_REMOTE_REPODIR" shedmake fetch-source-list "/tools/${SHED_BOOTSTRAP_SMLFILE_NAME}" || exit 1
 
 # Enter chroot and execute the bootstrap install script
 chroot "$SHED_BOOTSTRAP_INSTALLROOT" /tools/bin/env -i \
@@ -95,7 +93,7 @@ chroot "$SHED_BOOTSTRAP_INSTALLROOT" /tools/bin/env -i \
             TERM="$TERM"                \
             PS1='(bootstrap) \u:\w\$ '  \
             PATH=/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin \
-            SHED_BOOTSTRAP_SMLFILE="$SHED_BOOTSTRAP_SMLFILE_NAME" \
+            SHED_BOOTSTRAP_SMLFILE="/tools/${SHED_BOOTSTRAP_SMLFILE_NAME}" \
             /tools/bin/bash +h /tools/bootstrap_shedbuilt.sh
 
 # Set up the swap file
