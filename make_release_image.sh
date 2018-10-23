@@ -2,7 +2,7 @@
 
 # make_release_image.sh
 # Create a Shedbuilt img file for a specific device, suitable for installation on an SD card.
-# Exmaple: ./make_release_image.sh https://github.com/shedbuilt blank release_sun8i.sml orangepipc 2G shedbuilt_blank-1_orangepipc.img /mnt/shedarchive
+# Exmaple: ./make_release_image.sh https://github.com/shedbuilt blank sml/release_sun8i.sml orangepipc 2G shedbuilt_blank-1_orangepipc.img /mnt/shedarchive
 
 if [ $# -lt 6 ]; then
    echo "Too few arguments to make_release_image"
@@ -107,10 +107,10 @@ do
 done
 
 # Install all system packages
-cd "$SHDREL_SYSTEM_REPO_NAME"
-shedmake install-list "$SHDREL_SMLFILE" \
+SHED_REMOTE_REPO_DIR="$SHDREL_REMOTE_REPODIR" shedmake install-list "$SHDREL_SMLFILE" \
     --options 'release docs'" $SHDREL_DEVICE" \
     --install-root "$SHDREL_MOUNT" \
+    --ignore-dependencies \
     --cache-source \
     --source-dir "$SHDREL_SRCDIR" \
     --cache-binary \
