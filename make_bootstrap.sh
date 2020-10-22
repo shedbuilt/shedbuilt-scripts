@@ -70,7 +70,7 @@ if [ ! -d "$SHED_BOOTSTRAP_LOCAL_REPO_NAME" ]; then
     git init || exit 1
 fi
 cd "$SHED_BOOTSTRAP_REMOTE_REPODIR"
-for SHED_BOOTSTRAP_REMOTE_REPO_NAME in audio communication development games graphics multimedia networking retrocomputing system utils video
+for SHED_BOOTSTRAP_REMOTE_REPO_NAME in audio communication desktop development games graphics multimedia networking retrocomputing system utils video
 do
     if [ ! -d "$SHED_BOOTSTRAP_REMOTE_REPO_NAME" ]; then
         git clone --branch "$SHED_BOOTSTRAP_REPO_BRANCH" --depth 1 --shallow-submodules "${SHED_BOOTSTRAP_REPO_BASEURL}/shedbuilt-${SHED_BOOTSTRAP_REMOTE_REPO_NAME}.git" "$SHED_BOOTSTRAP_REMOTE_REPO_NAME" &&
