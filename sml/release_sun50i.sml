@@ -34,6 +34,7 @@ flex
 bash
 glibc
 tzdata
+# pam
 shadow
 gmp
 mpfr

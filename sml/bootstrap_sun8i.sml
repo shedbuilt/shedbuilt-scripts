@@ -18,6 +18,7 @@ pkg-config
 ncurses
 attr
 acl
+# pam
 libcap
 sed
 shadow
