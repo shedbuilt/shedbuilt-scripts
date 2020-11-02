@@ -83,7 +83,6 @@ sudo
 alsa-lib
 alsa-utils
 libpng
-libjpeg-turbo
 libsamplerate
 python_mako
 libdrm
@@ -91,16 +90,10 @@ mesa
 gl4es
 glu
 sdl
-sdl-gfx
-sdl-image
-sdl-mixer
 sdl-net
 sdl2
-sdl2-image
 sdl2-mixer
 sdl2-net
 dosbox
-yaml-cpp
-openxcom
 crispy-doom
 shedmake
