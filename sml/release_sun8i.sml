@@ -70,7 +70,7 @@ dbus
 man-db
 pcre
 swig
-u-boot
+u-boot --skip-postinstall
 linux
 vim
 which

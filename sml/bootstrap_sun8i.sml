@@ -72,7 +72,7 @@ util-linux
 e2fsprogs
 pcre
 swig
-u-boot
+u-boot --skip-postinstall
 openssh
 wget
 curl

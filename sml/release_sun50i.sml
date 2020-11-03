@@ -71,8 +71,8 @@ man-db
 pcre
 swig
 dtc
-atf-sunxi
-u-boot
+atf
+u-boot --skip-postinstall
 linux
 vim
 which

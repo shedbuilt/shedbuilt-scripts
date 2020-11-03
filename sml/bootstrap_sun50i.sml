@@ -73,8 +73,8 @@ e2fsprogs
 pcre
 swig
 dtc
-atf-sunxi
-u-boot
+atf
+u-boot --skip-postinstall
 openssh
 wget
 curl
