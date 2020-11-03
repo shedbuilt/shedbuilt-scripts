@@ -138,7 +138,7 @@ chroot "$SHDREL_MOUNT" /usr/bin/env -i \
     TERM="$TERM"                \
     PS1='\u:\w\$ '              \
     PATH=/bin:/usr/bin:/sbin:/usr/sbin \
-    bash "/root/setup_palooza.sh" 1>&3 2>&4
+    bash "/root/setup_palooza.sh" || exit 1
 
 # Copy out u-boot binary and unmount all filesystems
 SHDREL_UBOOT_BIN_PATH=$(ls "$SHDREL_MOUNT"/boot/u-boot/*_${SHDREL_DEVICE}.bin)
