@@ -19,6 +19,15 @@ SHDREL_WORKDIR="${7%/}"
 SHDREL_IMGNAME=$(basename "$SHDREL_IMGFILE" .img)
 SHDREL_MOUNT=/mnt/${SHDREL_IMGNAME}
 
+# Set parameters for Rockchip and Allwinner devices
+if [ "$SHDREL_DEVICE" == 'rock64' ]; then
+    SHEDREL_BOOTLOADER_OFFSET='64'
+    SHEDREL_PARTITION_START_SECTOR='32768'
+else
+    SHEDREL_BOOTLOADER_OFFSET='16'
+    SHEDREL_PARTITION_START_SECTOR='4096'
+fi
+
 # Create local caches
 SHDREL_SRCDIR="${SHDREL_WORKDIR}/source"
 SHDREL_BINDIR="${SHDREL_WORKDIR}/binary"
@@ -142,6 +151,6 @@ umount -v "$SHDREL_MOUNT" &&
 rmdir "$SHDREL_MOUNT" &&
 
 # Install bootloader
-dd if="${SHDREL_UBOOTDIR}/${SHDREL_UBOOT_BIN_FILE}" of=${SHDREL_LOOPDEV} bs=1024 seek=8 &&
+dd if="${SHDREL_UBOOTDIR}/${SHDREL_UBOOT_BIN_FILE}" of=${SHDREL_LOOPDEV} seek=${SHEDREL_BOOTLOADER_OFFSET} &&
 sync &&
 losetup -d ${SHDREL_LOOPDEV}
