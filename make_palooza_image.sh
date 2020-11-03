@@ -108,7 +108,7 @@ done
 
 # Install all system packages
 SHED_REMOTE_REPO_DIR="$SHDREL_REMOTE_REPODIR" shedmake install-list "$SHDREL_SMLFILE" \
-    --options 'release docs'" $SHDREL_DEVICE" \
+    --options 'release docs gles gl'" $SHDREL_DEVICE" \
     --install-root "$SHDREL_MOUNT" \
     --ignore-dependencies \
     --cache-source \
