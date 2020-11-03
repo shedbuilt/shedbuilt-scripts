@@ -56,7 +56,7 @@ echo o # Create a new empty DOS partition table
 echo n # Add a new partition
 echo p # Primary partition
 echo 1 # Partition number
-echo 4096 # First sector
+echo $SHEDREL_PARTITION_START_SECTOR # First sector
 echo # Last sector (Accept default: end of device)
 echo w # Write changes
 ) | fdisk ${SHDREL_LOOPDEV} &&
